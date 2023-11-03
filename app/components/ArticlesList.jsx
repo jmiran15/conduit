@@ -1,0 +1,1 @@
+// takes articls as prop

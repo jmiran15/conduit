@@ -8,7 +8,7 @@ import {
 import { Form, Link, useActionData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
-import { verifyLogin } from "~/models/user.server";
+import { createUser, getUserByEmail } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { validateEmail } from "~/utils";
 
@@ -44,23 +44,29 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const user = await verifyLogin(email, password);
-
-  if (!user) {
+  const existingUser = await getUserByEmail(email);
+  if (existingUser) {
     return json(
-      { errors: { email: "Invalid email or password", password: null } },
+      {
+        errors: {
+          email: "A user already exists with this email",
+          password: null,
+        },
+      },
       { status: 400 },
     );
   }
 
+  const user = await createUser(email, password);
+
   return createUserSession({
+    redirectTo: "/",
     request,
     userId: user.id,
-    redirectTo: "/",
   });
 };
 
-export default function Login() {
+export default function Register() {
   const actionData = useActionData<typeof action>();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -82,9 +88,9 @@ export default function Login() {
         mt="xl"
       >
         <Stack gap="xs" align="center" justify="center">
-          <Title order={1}>Sign in</Title>
-          <Link to="/register" className="text-green-500">
-            Need an account?
+          <Title order={1}>Sign up</Title>
+          <Link to="/login" className="text-green-500">
+            Have an account?
           </Link>
         </Stack>
         <Form method="post" className="w-full">
@@ -116,7 +122,7 @@ export default function Login() {
                 </div>
               ) : null}
               <Button type="submit" size="lg" color="green.6">
-                Sign in
+                Sign up
               </Button>
             </Stack>
           </fieldset>
