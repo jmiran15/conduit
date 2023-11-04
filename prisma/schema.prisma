@@ -8,18 +8,62 @@ generator client {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  password Password?
+  id              String    @id @default(cuid())
+  email           String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  password        Password?
+  bio             String?
+  image           String?
+  articles        Article[] @relation("UserArticles")
+  favorites       Article[] @relation("FavoriteArticles")
+  comments        Comment[]
+  following       User[]    @relation("UserFollow")
+  followers       User[]    @relation("UserFollow")
+  followedByCount Int?      @default(0)
+  followingCount  Int?      @default(0)
+  favoritesCount  Int?      @default(0)
+  commentsCount   Int?      @default(0)
+  articlesCount   Int?      @default(0)
+  // username        String    @unique
 }
 
 model Password {
-  hash String
-
+  hash   String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
+}
+
+model Article {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  title          String
+  description    String
+  body           String
+  author         User      @relation("UserArticles", fields: [authorId], references: [id])
+  authorId       String
+  favorites      User[]    @relation("FavoriteArticles")
+  favoritesCount Int       @default(0)
+  tags           Tag[]
+  comments       Comment[]
+  commentCount   Int       @default(0)
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  articles Article[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  body      String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  article   Article  @relation(fields: [articleId], references: [id])
+  articleId String
 }

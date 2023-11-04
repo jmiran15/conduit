@@ -18,7 +18,7 @@ export default function Profile() {
     <Stack>
       <Stack bg="gray.0" px="xl" py="sm">
         <Stack gap="xs" align="center" justify="center" py="xl">
-          <Avatar size="xl" />
+          <Avatar size="xl" src={user.image} alt={user.email} />
           <Title order={3}>{user.email}</Title>
         </Stack>
         <Link to="/settings" className="self-end">

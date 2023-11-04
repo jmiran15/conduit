@@ -6,4 +6,6 @@ import { singleton } from "./singleton.server";
 const prisma = singleton("prisma", () => new PrismaClient());
 prisma.$connect();
 
+// add middleware here for aggregate fields (i.e. commentsCount)
+
 export { prisma };
