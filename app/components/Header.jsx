@@ -66,7 +66,7 @@ function AuthenticatedLinks({ user, theme }) {
       </NavButton>
       <Group gap="xs">
         <Avatar src={user.image} size="sm" radius="xl" />
-        <NavButton to="/profile" theme={theme}>
+        <NavButton to={`${user.id}`} theme={theme}>
           {user.email}
         </NavButton>
       </Group>

@@ -44,23 +44,7 @@ export default function Index() {
             <Tabs.Panel value="global">
               {/* an article  */}
 
-              <Stack py="xl">
-                <Group justify="space-between">
-                  <UserInfo />
-                  <LikeButton />
-                </Group>
-                <Title order={3}>
-                  If we quantify the alarm, we can get to the FTP pixel through
-                  the online SSL interface!
-                </Title>
-                <Text lineClamp={4} size="md" color="dimmed">
-                  Omnis perspiciatis qui quia commodi sequi modi. Nostrum quam
-                  aut cupiditate est facere omnis possimus. Tenetur similique
-                  nemo illo soluta molestias facere quo. Ipsam totam facilis
-                  delectus nihil quidem soluta vel est omnis.
-                </Text>
-                <ArticleCardFooter />
-              </Stack>
+              <div>this is where the articles would go</div>
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>
@@ -82,39 +66,3 @@ export default function Index() {
     </Stack>
   );
 }
-
-const UserInfo = () => {
-  return <div>hello</div>;
-};
-
-const LikeButton = () => {
-  return (
-    <Button color="green.6" variant="outline">
-      42
-    </Button>
-  );
-};
-
-const ArticleCardFooter = () => {
-  return (
-    <Group justify="space-between">
-      <Text size="sm" color="dimmed">
-        Read more...
-      </Text>
-      <BadgeGroup />
-    </Group>
-  );
-};
-
-const BadgeGroup = () => {
-  return (
-    <Group gap="xs">
-      <Badge color="gray" variant="outline" size="sm">
-        Badge
-      </Badge>
-      <Badge color="gray" variant="outline" size="sm">
-        Badge
-      </Badge>
-    </Group>
-  );
-};

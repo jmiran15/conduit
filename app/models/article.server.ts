@@ -1,9 +1,14 @@
-import { Article } from "@prisma/client";
+import { Article, Prisma } from "@prisma/client";
 import slug from "slug";
 
 import { prisma } from "~/db.server";
 
-export type { Article } from "@prisma/client";
+export type Article_Tags_Author = Prisma.ArticleGetPayload<{
+  include: {
+    tags: true;
+    author: true;
+  };
+}>;
 
 // create an article
 export async function createArticle(
@@ -73,10 +78,26 @@ export async function getArticleBySlug(slug: Article["slug"]) {
           author: {
             select: {
               email: true,
+              image: true,
             },
           },
         },
       },
+    },
+  });
+}
+
+// load articles made by a specific user
+export async function getArticlesByUser(
+  userId: Article["authorId"],
+): Promise<Article_Tags_Author[]> {
+  return await prisma.article.findMany({
+    where: {
+      authorId: userId,
+    },
+    include: {
+      tags: true,
+      author: true,
     },
   });
 }
