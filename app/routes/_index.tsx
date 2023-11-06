@@ -10,14 +10,23 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import type { MetaFunction } from "@remix-run/node";
-// import { Link } from "@remix-run/react";
-// import { useOptionalUser } from "~/utils";
+import { json, type MetaFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+
+import ArticleCard from "~/components/articleCard/ArticleCard";
+import { getAllArticles } from "~/models/article.server";
 
 export const meta: MetaFunction = () => [{ title: "Conduit" }];
 
+// let load in all the articles
+export const loader = async () => {
+  const articles = await getAllArticles();
+  return json({ articles });
+};
+
 export default function Index() {
-  // const user = useOptionalUser();
+  const { articles } = useLoaderData<typeof loader>();
+
   return (
     <Stack gap="xl">
       <Center bg="green.6">
@@ -35,16 +44,16 @@ export default function Index() {
           </Text>
         </Stack>
       </Center>
-      <Grid px="xl" gutter="xl">
+      <Grid gutter="xl" className="lg:px-48 px-4">
         <Grid.Col span={9}>
           <Tabs defaultValue="global" color="green.6">
             <Tabs.List>
               <Tabs.Tab value="global">Global feed</Tabs.Tab>
             </Tabs.List>
             <Tabs.Panel value="global">
-              {/* an article  */}
-
-              <div>this is where the articles would go</div>
+              {articles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

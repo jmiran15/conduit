@@ -101,3 +101,13 @@ export async function getArticlesByUser(
     },
   });
 }
+
+// load in all the articles
+export async function getAllArticles(): Promise<Article_Tags_Author[]> {
+  return await prisma.article.findMany({
+    include: {
+      tags: true,
+      author: true,
+    },
+  });
+}

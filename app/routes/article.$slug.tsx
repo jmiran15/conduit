@@ -22,18 +22,26 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 import { getArticleBySlug } from "~/models/article.server";
 import { createComment } from "~/models/comment.server";
 import { getUserId } from "~/session.server";
-import { useUser } from "~/utils";
+import { useOptionalUser } from "~/utils";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const article = await getArticleBySlug(params.slug as string);
-
-  console.log({ articleFound: article });
 
   if (!article) {
     return redirect("/");
   }
 
-  return json({ article });
+  const userId = await getUserId(request);
+
+  console.log({ articleFound: article, userId });
+
+  // check if the current user is the owner of the article
+
+  if (userId && article?.authorId === userId) {
+    return json({ article, userId });
+  } else {
+    return json({ article, userId: null });
+  }
 };
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
@@ -56,8 +64,10 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 };
 
 export default function Article() {
-  const { article } = useLoaderData<typeof loader>();
-  const user = useUser();
+  const { article, userId } = useLoaderData<typeof loader>();
+  const user = useOptionalUser();
+
+  console.log("article testing: ", { article, userId, user });
 
   return (
     <Stack pb="xl">
@@ -85,12 +95,25 @@ export default function Article() {
             </Stack>
           </Group>
           <Group gap="xs">
-            <Button variant="outline" size="xs" color="gray.5">
-              Edit Article
-            </Button>
-            <Button variant="outline" size="xs" color="red.9">
-              Delete Article
-            </Button>
+            {userId ? (
+              <>
+                <Button variant="outline" size="xs" color="gray.5">
+                  Edit Article
+                </Button>
+                <Button variant="outline" size="xs" color="red.9">
+                  Delete Article
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="xs" color="gray.5">
+                  Follow {article?.author.email}
+                </Button>
+                <Button variant="outline" size="xs" color="green.9">
+                  Favorite Article
+                </Button>
+              </>
+            )}
           </Group>
         </Group>
       </Stack>
@@ -99,16 +122,31 @@ export default function Article() {
         <Divider />
       </Stack>
       <Stack className="lg:mx-48 mx-4" align="center">
-        <CommentEditor user={user} />
-        {article?.comments.map((comment) => {
-          return (
-            <Comment
-              key={comment.id}
-              author={comment.author}
-              body={comment.body}
-            />
-          );
-        })}
+        {user ? (
+          <>
+            <CommentEditor user={user} />
+            {article?.comments.map((comment) => {
+              return (
+                <Comment
+                  key={comment.id}
+                  author={comment.author}
+                  body={comment.body}
+                />
+              );
+            })}
+          </>
+        ) : (
+          <div>
+            <Link to="/login" className="text-green-600 hover:underline">
+              Sign in
+            </Link>{" "}
+            or{" "}
+            <Link to="/register" className="text-green-600 hover:underline">
+              sign up
+            </Link>{" "}
+            to add comments on this article.
+          </div>
+        )}
       </Stack>
     </Stack>
   );
