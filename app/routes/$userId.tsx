@@ -37,8 +37,6 @@ export default function Profile() {
   const { userId, tabValue } = useParams();
   const tab_ = `/${userId}/${tabValue === undefined ? "" : tabValue}`;
 
-  console.log("profile testing: ", { tab_, userId, tabValue });
-
   return (
     <Stack>
       <Stack bg="gray.0" className="lg:px-72 px-4" py="sm">

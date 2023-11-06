@@ -3,10 +3,15 @@ import slug from "slug";
 
 import { prisma } from "~/db.server";
 
-export type Article_Tags_Author = Prisma.ArticleGetPayload<{
+export type Article_Tags_Author_Favs = Prisma.ArticleGetPayload<{
   include: {
     tags: true;
     author: true;
+    favorites: {
+      select: {
+        id: true;
+      };
+    };
   };
 }>;
 
@@ -18,11 +23,7 @@ export async function createArticle(
   authorId: Article["authorId"],
   tags: string[],
 ) {
-  console.log("createArticle", title, description, body, authorId, tags);
   const slugifiedTitle = slug(title);
-
-  console.log("slugifiedTitle", slugifiedTitle);
-
   const article = prisma.article.create({
     data: {
       title,
@@ -90,7 +91,7 @@ export async function getArticleBySlug(slug: Article["slug"]) {
 // load articles made by a specific user
 export async function getArticlesByUser(
   userId: Article["authorId"],
-): Promise<Article_Tags_Author[]> {
+): Promise<Article_Tags_Author_Favs[]> {
   return await prisma.article.findMany({
     where: {
       authorId: userId,
@@ -98,16 +99,60 @@ export async function getArticlesByUser(
     include: {
       tags: true,
       author: true,
+      favorites: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 }
 
 // load in all the articles
-export async function getAllArticles(): Promise<Article_Tags_Author[]> {
+export async function getAllArticles(): Promise<Article_Tags_Author_Favs[]> {
   return await prisma.article.findMany({
     include: {
       tags: true,
       author: true,
+      favorites: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+}
+
+// like an article
+export async function likeArticle(
+  slug: Article["slug"],
+  userId: Article["authorId"],
+) {
+  return await prisma.article.update({
+    where: { slug },
+    data: {
+      favorites: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+}
+
+// unlike an article
+export async function unlikeArticle(
+  slug: Article["slug"],
+  userId: Article["authorId"],
+) {
+  return await prisma.article.update({
+    where: { slug },
+    data: {
+      favorites: {
+        disconnect: {
+          id: userId,
+        },
+      },
     },
   });
 }

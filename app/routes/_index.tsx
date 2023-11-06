@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   Card,
   Center,
   Grid,
@@ -10,11 +9,16 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { ActionFunctionArgs, redirect } from "@remix-run/node";
 import { json, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import ArticleCard from "~/components/articleCard/ArticleCard";
-import { getAllArticles } from "~/models/article.server";
+import {
+  getAllArticles,
+  likeArticle,
+  unlikeArticle,
+} from "~/models/article.server";
 
 export const meta: MetaFunction = () => [{ title: "Conduit" }];
 
@@ -22,6 +26,38 @@ export const meta: MetaFunction = () => [{ title: "Conduit" }];
 export const loader = async () => {
   const articles = await getAllArticles();
   return json({ articles });
+};
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const body = await request.formData();
+
+  const action = body.get("_action");
+
+  switch (action) {
+    case "like": {
+      const articleSlugToLike = body.get("slug");
+      const userId = body.get("userId");
+      const likedState = body.get("liked");
+
+      // if userId == "", redirect them to the login page?, this would be good place to implement the redirectTo thing in functions, since we would want to redirect the user back to the article after they signin
+      if (!userId) {
+        return redirect("/login");
+      }
+      // if likedState == "true", then unlike the article, otherwise like the article
+      if (likedState === "true") {
+        console.log("unliking article");
+        await unlikeArticle(articleSlugToLike as string, userId as string);
+        return json({ liked: false });
+      } else {
+        console.log("liking article");
+        await likeArticle(articleSlugToLike as string, userId as string);
+        return json({ liked: true });
+      }
+    }
+    default:
+      // return error
+      return json({ error: "invalid action" }, { status: 400 });
+  }
 };
 
 export default function Index() {

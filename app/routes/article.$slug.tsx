@@ -33,8 +33,6 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
   const userId = await getUserId(request);
 
-  console.log({ articleFound: article, userId });
-
   // check if the current user is the owner of the article
 
   if (userId && article?.authorId === userId) {
@@ -45,8 +43,6 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
-  console.log("params: ", params);
-
   const body = await request.formData();
 
   // get the userId (redirects if not logged in)
@@ -66,8 +62,6 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 export default function Article() {
   const { article, userId } = useLoaderData<typeof loader>();
   const user = useOptionalUser();
-
-  console.log("article testing: ", { article, userId, user });
 
   return (
     <Stack pb="xl">

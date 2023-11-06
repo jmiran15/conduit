@@ -13,8 +13,6 @@ export default function UserTag({
   // emailColor?: string;
   avatarSize?: string;
 }) {
-  console.log("user tag testing: ", { user, date });
-
   return (
     <Group>
       <Avatar size={avatarSize} src={user.image} />

@@ -19,19 +19,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const tags = (body.get("tags") as string).split(",");
 
   const [a, t] = await createArticle(title, about, article, userId, tags);
-
-  console.log({
-    a,
-    t,
-  });
-
   return json({ result: { article: a, tags: t } });
 };
 
 export default function Settings() {
-  const data = useActionData<typeof action>();
-
-  console.log("form data: ", data);
+  // const data = useActionData<typeof action>();
 
   return (
     <Center>

@@ -55,7 +55,6 @@ function UnauthenticatedLinks({ theme }) {
 }
 
 function AuthenticatedLinks({ user, theme }) {
-  console.log(user);
   return (
     <>
       <NavButton to="/editor" theme={theme}>

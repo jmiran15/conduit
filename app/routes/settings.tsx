@@ -8,7 +8,7 @@ import {
   Title,
 } from "@mantine/core";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 
 import { updateUserById } from "~/models/user.server";
 import { logout, requireUserId } from "~/session.server";
@@ -33,8 +33,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         bio,
       });
 
-      console.log(updatedUser);
-
       return json({ result: updatedUser });
     }
     case "logout":
@@ -46,9 +44,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Settings() {
   const user = useUser();
-  const data = useActionData<typeof action>();
-
-  console.log("form data: ", data);
+  // const data = useActionData<typeof action>();
 
   return (
     <Center>
