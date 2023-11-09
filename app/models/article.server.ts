@@ -136,6 +136,10 @@ export async function likeArticle(
           id: userId,
         },
       },
+      // increment the favoritesCount
+      favoritesCount: {
+        increment: 1,
+      },
     },
   });
 }
@@ -152,6 +156,10 @@ export async function unlikeArticle(
         disconnect: {
           id: userId,
         },
+      },
+      // decrement the favoritesCount
+      favoritesCount: {
+        decrement: 1,
       },
     },
   });
