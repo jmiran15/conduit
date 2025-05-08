@@ -1,5 +1,8 @@
 import { useMatches } from "@remix-run/react";
-import { useMemo } from "react";
+// NOTE: This file contains small, framework-agnostic helpers that are shared
+// across the Remix application. Feel free to add additional utilities here as
+// the codebase grows.
+import { useMatches } from "@remix-run/react";
 
 import type { User } from "~/models/user.server";
 
